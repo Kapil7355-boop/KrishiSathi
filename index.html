@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KrishiSathi - Digital Farming Assistant</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5fff6;
+      color: #333;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(90deg, #2e7d32, #43a047);
+      color: #fff;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .header h1 {
+      font-size: 20px;
+      margin: 0;
+      font-weight: bold;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header-right div {
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* Welcome Section with Background Image */
+    .welcome {
+      background: url('https://cdn.pixabay.com/photo/2016/11/29/04/00/agriculture-1867212_1280.jpg') center/cover no-repeat;
+      color: #fff;
+      margin: 15px;
+      padding: 40px 20px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+      position: relative;
+    }
+    .welcome::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 16px;
+    }
+    .welcome h2, .welcome p, .welcome button {
+      position: relative;
+      z-index: 1;
+    }
+    .welcome h2 {
+      margin: 0;
+      font-size: 26px;
+      font-weight: bold;
+    }
+    .welcome p {
+      font-size: 15px;
+      margin: 10px 0;
+    }
+    .welcome button {
+      background: #ff9800;
+      border: none;
+      padding: 10px 20px;
+      color: #fff;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .welcome button:hover {
+      background: #e68900;
+    }
+
+    /* Quick Actions */
+    .section-title {
+      margin: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #1b5e20;
+    }
+    .quick-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 0 15px;
+    }
+    .action-card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 18px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .action-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .action-card img {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 10px;
+    }
+    .action-card h3 {
+      font-size: 15px;
+      margin: 5px 0;
+      color: #2e7d32;
+    }
+
+    /* Daily Tip and Weather Card */
+    .tip-card, .weather-card {
+      background: #fff;
+      margin: 15px;
+      padding: 15px;
+      border-left: 6px solid #2e7d32;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-size: 14px;
+      display: none; /* Hide by default */
+    }
+    .tip-card h3, .weather-card h3 {
+      margin: 0 0 8px;
+      color: #2e7d32;
+    }
+
+    /* Crop Info Section */
+    .crop-info-card {
+      background: #fff;
+      margin: 15px;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      display: none; /* Hide by default */
+    }
+    .crop-info-card h3 {
+      color: #1b5e20;
+      margin-top: 0;
+    }
+    .crop-info-card p {
+      font-size: 14px;
+    }
+
+    /* Knowledge and Disease Sections */
+    .knowledge-section, .disease-section {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+    }
+    .knowledge-content, .disease-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      width: 90%;
+      max-width: 600px;
+      max-height: 80%;
+      overflow-y: auto;
+      position: relative;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #888;
+    }
+    .knowledge-content h2, .disease-content h2 {
+      margin-top: 0;
+      color: #2e7d32;
+    }
+    .crop-list, .disease-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .crop-button, .disease-button {
+      background: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .crop-button:hover, .disease-button:hover {
+      background: #dcedc8;
+    }
+    .crop-details, .disease-details {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+    }
+    .crop-details h4, .disease-details h4 {
+      margin-top: 0;
+      color: #1b5e20;
+    }
+    .crop-details ul, .disease-details ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .crop-details li, .disease-details li {
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    /* Recent Topics */
+    .recent {
+      margin: 20px 15px;
+    }
+    .topic {
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px 15px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .topic:hover {
+      background: #f1f8f2;
+    }
+    .topic span {
+      font-size: 12px;
+      color: #888;
+      display: block;
+    }
+
+    /* Chatbot */
+    .chatbot {
+      position: fixed;
+      bottom: 80px;
+      right: 15px;
+      width: 300px;
+      max-height: 400px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 1000;
+    }
+    .chatbot-header {
+      background: #2e7d32;
+      color: #fff;
+      padding: 12px;
+      font-size: 14px;
+      text-align: center;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .chatbot-header span {
+        cursor: pointer;
+    }
+    .chat-messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      font-size: 13px;
+      background: #f9fdf9;
+    }
+    .message {
+      margin: 8px 0;
+      padding: 8px 12px;
+      border-radius: 10px;
+      max-width: 80%;
+      line-height: 1.4;
+    }
+    .user-msg {
+      background: #c8e6c9;
+      align-self: flex-end;
+      margin-left: auto;
+    }
+    .bot-msg {
+      background: #eeeeee;
+      align-self: flex-start;
+    }
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #ccc;
+    }
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      font-size: 13px;
+    }
+    .chat-input button {
+      background: #2e7d32;
+      border: none;
+      color: #fff;
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+    .chat-buttons {
+      display: flex;
+      gap: 5px;
+      padding: 5px;
+      background: #f0f0f0;
+      border-top: 1px solid #ccc;
+    }
+    .chat-buttons button {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #4CAF50;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: #fff;
+      box-shadow: 0 -1px 6px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 999;
+    }
+    .bottom-nav div {
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+      cursor: pointer;
+    }
+    .bottom-nav .active {
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>🌾 KrishiSathi</h1>
+    <div class="header-right">
+      <div id="langSelector">🌐 EN</div>
+      🔔
+    </div>
+  </div>
+
+  <div class="welcome">
+    <h2 id="welcomeTitle">Welcome, Farmer!</h2>
+    <p id="welcomeText">Your digital farming assistant is here to help you grow better crops 🌱.</p>
+    <button onclick="toggleChat()" id="chatButton">💬 Chat Now</button>
+  </div>
+
+  <div class="tip-card" id="tipCard" style="display: block;">
+    <h3 id="tipTitle">🌱 Farming Tip of the Day</h3>
+    <p id="tipText"></p>
+  </div>
+  
+  <div class="weather-card" id="weatherCard">
+    <h3 id="weatherTitle">☀️ Weather Info</h3>
+    <p id="weatherText"></p>
+  </div>
+
+  <div class="section-title" id="quickTitle">⚡ Quick Actions</div>
+  <div class="quick-actions">
+    <div class="action-card" onclick="toggleChat()">
+      <img src="https://cdn-icons-png.flaticon.com/512/3076/3076649.png" alt="Ask">
+      <h3 id="askTitle">Ask Question</h3>
+    </div>
+    <div class="action-card" onclick="toggleDisease()">
+      <img src="https://cdn-icons-png.flaticon.com/512/765/765613.png" alt="Disease">
+      <h3 id="diseaseTitle">Crop Diseases</h3>
+    </div>
+    <div class="action-card" onclick="showWeather()">
+      <img src="https://cdn-icons-png.flaticon.com/512/1163/1163661.png" alt="Weather">
+      <h3 id="weatherNavTitle">Weather Info</h3>
+    </div>
+    <div class="action-card">
+      <img src="https://cdn-icons-png.flaticon.com/512/3135/3135706.png" alt="Market">
+      <h3 id="marketTitle">Market Prices</h3>
+    </div>
+  </div>
+
+  <div class="crop-info-card" id="cropInfo" style="display: block;">
+    <h3 id="cropInfoTitle">Paddy (Rice)</h3>
+    <p id="cropInfoText"></p>
+    <div class="section-title" id="cropDiseaseTitle">Common Diseases</div>
+    <p id="cropDiseaseText"></p>
+  </div>
+
+  <div class="recent">
+    <h3 id="recentTitle">📰 Recent Topics</h3>
+    <div class="topic">
+      <div>
+        <strong id="topic1">Wheat Disease Management</strong>
+        <span id="topic1Time">2 hours ago</span>
+      </div>
+      ➡️
+    </div>
+    <div class="topic">
+      <div>
+        <strong id="topic2">Monsoon Preparation Tips</strong>
+        <span id="topic2Time">1 day ago</span>
+      </div>
+      ➡️
+    </div>
+  </div>
+
+  <div class="knowledge-section" id="knowledgeSection">
+    <div class="knowledge-content">
+      <span class="close-btn" onclick="toggleKnowledge()">✖️</span>
+      <h2 id="knowledgeTitle">Crop Cultivation Guide</h2>
+      <div class="crop-list" id="cropList"></div>
+      <div class="crop-details" id="knowledgeDetails">
+        <h4 id="knowledgeDetailsTitle">Select a crop to view details.</h4>
+        <div id="knowledgeDetailsContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="disease-section" id="diseaseSection">
+    <div class="disease-content">
+      <span class="close-btn" onclick="toggleDisease()">✖️</span>
+      <h2 id="diseaseSectionTitle">Common Crop Diseases & Solutions</h2>
+      <div class="disease-list" id="diseaseList"></div>
+      <div class="disease-details" id="diseaseDetails">
+        <h4 id="diseaseDetailsTitle">Select a disease to view details.</h4>
+        <div id="diseaseDetailsContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chatbot" id="chatbot">
+    <div class="chatbot-header">
+      <span id="chatHeader">👩‍🌾 Krishi Chatbot</span>
+      <span onclick="toggleChat()">✖️</span>
+    </div>
+    <div class="chat-buttons">
+      <button onclick="handleCamera()">📸</button>
+      <button onclick="handleVoice()">🎤</button>
+      <input type="file" id="imageInput" accept="image/*" style="display: none;">
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Ask something...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <div class="active" id="homeNav" onclick="toggleMainContent('home')">🏠<br>Home</div>
+    <div onclick="toggleChat()" id="chatNav">💬<br>Chat</div>
+    <div id="knowledgeNav" onclick="toggleKnowledge()">📖<br>Knowledge</div>
+    <div id="diseaseNav" onclick="toggleDisease()">🦠<br>Diseases</div>
+    <div id="weatherNav" onclick="showWeather()">☀️<br>Weather</div>
+    <div id="pricesNav">💹<br>Prices</div>
+  </div>
+
+  <script>
+    // Language Toggle
+    let currentLang = "EN";
+    const translations = {
+      EN: {
+        welcomeTitle: "Welcome, Farmer!",
+        welcomeText: "Your digital farming assistant is here to help you grow better crops 🌱.",
+        tipTitle: "🌱 Farming Tip of the Day",
+        weatherNavTitle: "Weather Info",
+        marketTitle: "Market Prices",
+        recentTitle: "📰 Recent Topics",
+        topic1: "Wheat Disease Management",
+        topic1Time: "2 hours ago",
+        topic2: "Monsoon Preparation Tips",
+        topic2Time: "1 day ago",
+        chatHeader: "👩‍🌾 Krishi Chatbot",
+        chatButton: "💬 Chat Now",
+        chatPlaceholder: "Ask something...",
+        botResponseWeather: "☀️ The weather in your location is sunny with a temperature of 28°C. Perfect for field work!",
+        botResponseCrop: "🌾 Paddy (Rice) is a staple crop. It requires a lot of water and a warm, humid climate.",
+        botResponsePrice: "💹 Tomato: ₹40/kg, Wheat: ₹25/kg.",
+        botResponseDefault: "🤖 I'm still learning 🌱, but I’ll try to help!",
+        cropInfoTitle: "Paddy (Rice)",
+        cropInfoText: "Paddy cultivation requires a hot and humid climate. It is grown in tropical and sub-tropical regions. It is a main crop of India and is sown in the rainy season.",
+        cropDiseaseTitle: "Common Diseases",
+        cropDiseaseText: "1. **Bacterial Blight:** Causes yellowing of leaves. 2. **Rice Blast:** Fungal disease causing spots on leaves and stems. 3. **Sheath Blight:** Affects the lower part of the plant, leading to wilting.",
+        quickTitle: "⚡ Quick Actions",
+        askTitle: "Ask Question",
+        diseaseTitle: "Crop Diseases",
+        weatherTitle: "☀️ Weather Info",
+        knowledgeTitle: "Crop Cultivation Guide",
+        knowledgeDetailsTitle: "Select a crop to view details.",
+        diseaseSectionTitle: "Common Crop Diseases & Solutions",
+        diseaseDetailsTitle: "Select a disease to view details.",
+        fertilizerSectionTitle: "Fertilizers for Quality",
+        fertilizerTip: "To improve crop quality and disease resistance, apply a balanced NPK (Nitrogen, Phosphorus, Potassium) fertilizer during the growing season. Micronutrients like Zinc and Boron are also crucial."
+      },
+      HI: {
+        welcomeTitle: "स्वागत है, किसान!",
+        welcomeText: "आपका डिजिटल कृषि सहायक यहां बेहतर फसल उगाने में मदद करने के लिए है 🌱।",
+        tipTitle: "🌱 आज का कृषि सुझाव",
+        weatherNavTitle: "मौसम जानकारी",
+        marketTitle: "बाजार मूल्य",
+        recentTitle: "📰 हालिया विषय",
+        topic1: "गेहूं रोग प्रबंधन",
+        topic1Time: "2 घंटे पहले",
+        topic2: "मानसून तैयारी सुझाव",
+        topic2Time: "1 दिन पहले",
+        chatHeader: "👩‍🌾 कृषि चैटबोट",
+        chatButton: "💬 चैट शुरू करें",
+        chatPlaceholder: "कुछ पूछें...",
+        botResponseWeather: "☀️ आपके स्थान पर मौसम 28°C तापमान के साथ धूपदार है। खेत के काम के लिए बिल्कुल सही!",
+        botResponseCrop: "🌾 धान (चावल) एक मुख्य फसल है। इसे बहुत अधिक पानी और गर्म, आर्द्र जलवायु की आवश्यकता होती है।",
+        botResponsePrice: "💹 टमाटर: ₹40/किग्रा, गेहूं: ₹25/किग्रा।",
+        botResponseDefault: "🤖 मैं अभी सीख रहा हूँ 🌱, लेकिन मदद करने की कोशिश करूंगा!",
+        cropInfoTitle: "धान (चावल)",
+        cropInfoText: "धान की खेती के लिए गर्म और आर्द्र जलवायु की आवश्यकता होती है। यह उष्णकटिबंधीय और उपोष्णकटिबंधीय क्षेत्रों में उगाया जाता है। यह भारत की एक मुख्य फसल है और इसे बरसात के मौसम में बोया जाता है।",
+        cropDiseaseTitle: "सामान्य रोग",
+        cropDiseaseText: "1. **बैक्टीरियल ब्लाइट:** पत्तियों के पीले पड़ने का कारण बनता है। 2. **राइस ब्लास्ट:** फफूंद जनित रोग जो पत्तियों और तनों पर धब्बे पैदा करता है। 3. **शीथ ब्लाइट:** पौधे के निचले हिस्से को प्रभावित करता है, जिससे मुरझाना होता है।",
+        quickTitle: "⚡ त्वरित क्रियाएँ",
+        askTitle: "प्रश्न पूछें",
+        diseaseTitle: "फसल रोग",
+        weatherTitle: "☀️ मौसम जानकारी",
+        knowledgeTitle: "फसलें उगाना सीखें",
+        knowledgeDetailsTitle: "विवरण देखने के लिए एक फसल चुनें।",
+        diseaseSectionTitle: "फसल रोग और समाधान",
+        diseaseDetailsTitle: "विवरण देखने के लिए एक रोग चुनें।",
+        fertilizerSectionTitle: "गुणवत्ता के लिए उर्वरक",
+        fertilizerTip: "फसल की गुणवत्ता और रोग प्रतिरोधक क्षमता में सुधार के लिए, बढ़ते मौसम के दौरान संतुलित NPK (नाइट्रोजन, फास्फोरस, पोटेशियम) उर्वरक का उपयोग करें। जिंक और बोरॉन जैसे सूक्ष्म पोषक तत्व भी महत्वपूर्ण हैं।"
+      },
+      ML: {
+        welcomeTitle: "കർഷകനേ, സ്വാഗതം!",
+        welcomeText: "മെച്ചപ്പെട്ട വിളകൾ വളർത്താൻ നിങ്ങളെ സഹായിക്കാൻ നിങ്ങളുടെ ഡിജിറ്റൽ കാർഷിക സഹായി ഇവിടെയുണ്ട് 🌱.",
+        tipTitle: "🌱 ഇന്നത്തെ കാർഷിക നുറുങ്ങ്",
+        weatherNavTitle: "കാലാവസ്ഥാ വിവരങ്ങൾ",
+        marketTitle: "വിപണി വിലകൾ",
+        recentTitle: "📰 സമീപകാല വിഷയങ്ങൾ",
+        topic1: "ഗോതമ്പ് രോഗം കൈകാര്യം ചെയ്യൽ",
+        topic1Time: "2 മണിക്കൂർ മുൻപ്",
+        topic2: "മൺസൂൺ തയ്യാറെടുപ്പ് നുറുങ്ങുകൾ",
+        topic2Time: "1 ദിവസം മുൻപ്",
+        chatHeader: "👩‍🌾 കൃഷി ചാറ്റ്ബോട്ട്",
+        chatButton: "💬 ഇപ്പോൾ ചാറ്റ് ചെയ്യുക",
+        chatPlaceholder: "എന്തെങ്കിലും ചോദിക്കൂ...",
+        botResponseWeather: "☀️ നിങ്ങളുടെ സ്ഥലത്തെ കാലാവസ്ഥ 28°C താപനിലയോടെ വെയിലുള്ളതാണ്. കൃഷിക്ക് അനുയോജ്യം!",
+        botResponseCrop: "🌾 നെല്ല് (അരി) ഒരു പ്രധാന വിളയാണ്. ഇതിന് ധാരാളം വെള്ളവും ചൂടുള്ളതും ഈർപ്പമുള്ളതുമായ കാലാവസ്ഥ ആവശ്യമാണ്.",
+        botResponsePrice: "💹 തക്കാളി: ₹40/kg, ഗോതമ്പ്: ₹25/kg.",
+        botResponseDefault: "🤖 ഞാൻ ഇപ്പോഴും പഠിച്ചുകൊണ്ടിരിക്കുകയാണ് 🌱, പക്ഷെ ഞാൻ സഹായിക്കാൻ ശ്രമിക്കാം!",
+        cropInfoTitle: "നെല്ല് (അരി)",
+        cropInfoText: "നെൽകൃഷിക്ക് ചൂടുള്ളതും ഈർപ്പമുള്ളതുമായ കാലാവസ്ഥ ആവശ്യമാണ്. ഇത് ഉഷ്ണമേഖലാ, ഉപോഷ്ണമേഖലാ പ്രദേശങ്ങളിൽ കൃഷി ചെയ്യുന്നു. ഇത് ഇന്ത്യയിലെ ഒരു പ്രധാന വിളയാണ്, ഇത് മഴക്കാലത്ത് വിതയ്ക്കുന്നു.",
+        cropDiseaseTitle: "സാധാരണ രോഗങ്ങൾ",
+        cropDiseaseText: "1. **ബാക്ടീരിയൽ ബ്ലൈറ്റ്:** ഇലകൾക്ക് മഞ്ഞനിറം ഉണ്ടാക്കുന്നു. 2. **റൈസ് ബ്ലൈസ്റ്റ്:** ഇലകളിലും തണ്ടുകളിലും പാടുകൾ ഉണ്ടാക്കുന്ന ഒരു ഫംഗസ് രോഗം. 3. **ഷീത്ത് ബ്ലൈറ്റ്:** ചെടിയുടെ താഴത്തെ ഭാഗത്തെ ബാധിക്കുന്നു, ഇത് വാട്ടത്തിന് കാരണമാകുന്നു.",
+        quickTitle: "⚡ വേഗത്തിലുള്ള പ്രവർത്തനങ്ങൾ",
+        askTitle: "ചോദ്യം ചോദിക്കുക",
+        diseaseTitle: "വിള രോഗങ്ങൾ",
+        weatherTitle: "☀️ കാലാവസ്ഥാ വിവരങ്ങൾ",
+        knowledgeTitle: "വിള കൃഷി മാർഗ്ഗദർശി",
+        knowledgeDetailsTitle: "വിവരങ്ങൾ കാണാൻ ഒരു വിള തിരഞ്ഞെടുക്കുക.",
+        diseaseSectionTitle: "വിള രോഗങ്ങളും പരിഹാരങ്ങളും",
+        diseaseDetailsTitle: "വിവരങ്ങൾ കാണാൻ ഒരു രോഗം തിരഞ്ഞെടുക്കുക.",
+        fertilizerSectionTitle: "ഗുണനിലവാരത്തിനുള്ള വളങ്ങൾ",
+        fertilizerTip: "വിളകളുടെ ഗുണനിലവാരവും രോഗപ്രതിരോധശേഷിയും മെച്ചപ്പെടുത്താൻ, വളരുന്ന സീസണിൽ NPK (നൈട്രജൻ, ഫോസ്ഫറസ്, പൊട്ടാസ്യം) വളം ഉപയോഗിക്കുക. സിങ്ക്, ബോറോൺ പോലുള്ള സൂക്ഷ്മ പോഷകങ്ങളും വളരെ പ്രധാനമാണ്."
+      }
+    };
+    
+    // Crop Data for Knowledge Section
+    const cropsData = {
+      EN: {
+        "Paddy (Rice)": {
+          cultivation: "Sowing in June-July, harvesting in Oct-Nov. Needs hot and humid climate with heavy rainfall. Requires well-drained fertile clayey soil. Field preparation includes plowing and leveling.",
+          diseases: "1. **Rice Blast:** A fungal disease causing diamond-shaped spots on leaves. 2. **Bacterial Blight:** Leads to yellowing of leaves and wilting.",
+          timing: "Kharif crop, planted during monsoon season."
+        },
+        "Wheat": {
+          cultivation: "Sowing in Oct-Nov, harvesting in March-April. Requires cool climate and moderate rainfall. Best grown in loamy soil.",
+          diseases: "1. **Rust:** Fungal disease causing reddish-brown spots on leaves and stems. 2. **Powdery Mildew:** White, powdery spots on leaves.",
+          timing: "Rabi crop, planted in winter."
+        },
+        "Maize (Corn)": {
+          cultivation: "Sowing in June-July. Needs moderate temperature and rainfall. Grows well in alluvial soil. Requires good sunlight.",
+          diseases: "1. **Corn Smut:** Fungal disease causing large galls on plants. 2. **Northern Corn Leaf Blight:** Long, elliptical lesions on leaves.",
+          timing: "Kharif crop, planted in monsoon season."
+        },
+        "Tomato": {
+          cultivation: "Can be grown year-round in many regions. Requires well-drained soil, full sun, and regular watering. Use stakes or cages for support.",
+          diseases: "1. **Early Blight:** Causes brown spots on lower leaves. 2. **Blossom End Rot:** Dark, sunken spots on the bottom of the fruit.",
+          timing: "Can be grown in multiple seasons (Kharif, Rabi, Zaid)."
+        },
+        "Potato": {
+          cultivation: "Sowing in Oct-Nov. Prefers a cool climate and loamy soil. Requires earthing up to protect tubers from sunlight.",
+          diseases: "1. **Late Blight:** A fungus-like disease that causes rapid wilting and rot. 2. **Scab:** Causes rough, scabby lesions on the potato surface.",
+          timing: "Rabi crop, planted in winter."
+        },
+        "Onion": {
+          cultivation: "Sowing in Oct-Nov. Prefers well-drained sandy loam soil. Requires a long day length for bulb formation. Harvest when leaves start to turn yellow.",
+          diseases: "1. **Downy Mildew:** Fungal disease causing pale spots and fuzzy growth. 2. **Onion Thrips:** Small insects that feed on leaves, causing silver streaks.",
+          timing: "Rabi crop, planted in winter."
+        },
+        "Cotton": {
+          cultivation: "Sowing in May-July. Requires a warm climate and black soil. Needs at least 210 frost-free days.",
+          diseases: "1. **Bollworm:** A caterpillar that bores into and feeds on cotton bolls. 2. **Bacterial Blight:** Causes angular leaf spots and boll rot.",
+          timing: "Kharif crop, planted in monsoon season."
+        },
+        "Sugarcane": {
+          cultivation: "Planting in Feb-April. Requires hot and humid climate and fertile soil. It is a long duration crop, taking about a year to mature.",
+          diseases: "1. **Red Rot:** A fungal disease causing reddening of internal stem tissue. 2. **Smut:** Causes a black, whip-like structure to emerge from the top of the stalk.",
+          timing: "Planted in spring."
+        },
+        "Tea": {
+          cultivation: "Grown on slopes in hilly regions. Requires a hot, humid climate, deep and fertile well-drained soil, and frequent showers.",
+          diseases: "1. **Blister Blight:** Fungal disease causing blisters on young leaves. 2. **Red Rust:** Algal disease causing reddish spots on leaves and stems.",
+          timing: "Grown year-round, harvesting (plucking) is a continuous process."
+        },
+        "Coffee": {
+          cultivation: "Requires hot and humid climate with well-drained loamy soil. Grown on hillsides in southern India.",
+          diseases: "1. **Coffee Rust:** A fungal disease that causes yellow spots on leaves. 2. **Berry Borer:** A beetle that bores into coffee berries.",
+          timing: "Grown year-round, with harvesting in winter."
+        }
+      },
+      HI: {
+        "धान (चावल)": {
+          cultivation: "जून-जुलाई में बुवाई, अक्टूबर-नवंबर में कटाई। इसे गर्म और आर्द्र जलवायु, भारी वर्षा और अच्छी जल निकासी वाली उपजाऊ मिट्टी की आवश्यकता होती है। खेत की तैयारी में जुताई और समतलीकरण शामिल है।",
+          diseases: "1. **राइस ब्लास्ट:** एक फंगल रोग जो पत्तियों पर हीरे के आकार के धब्बे पैदा करता है। 2. **बैक्टीरियल ब्लाइट:** पत्तियों का पीला पड़ना और मुरझाना।",
+          timing: "खरीफ फसल, मानसून के मौसम में बोई जाती है।"
+        },
+        "गेहूं": {
+          cultivation: "अक्टूबर-नवंबर में बुवाई, मार्च-अप्रैल में कटाई। ठंडी जलवायु और मध्यम वर्षा की आवश्यकता होती है। दोमट मिट्टी में सबसे अच्छा उगता है।",
+          diseases: "1. **रतुआ:** फंगल रोग जो पत्तियों और तनों पर लाल-भूरे धब्बे पैदा करता है। 2. **पाउडरी फफूंदी:** पत्तियों पर सफेद, पाउडर जैसे धब्बे।",
+          timing: "रबी फसल, सर्दियों में बोई जाती है।"
+        },
+        "मक्का": {
+          cultivation: "जून-जुलाई में बुवाई। मध्यम तापमान और वर्षा की आवश्यकता होती है। जलोढ़ मिट्टी में अच्छी तरह से उगता है। अच्छी धूप की आवश्यकता होती है।",
+          diseases: "1. **कॉर्न स्मट:** फंगल रोग जो पौधों पर बड़े गोल गांठें पैदा करता है। 2. **नॉर्दर्न कॉर्न लीफ ब्लाइट:** पत्तियों पर लंबे, अंडाकार घाव।",
+          timing: "खरीफ फसल, मानसून के मौसम में बोई जाती है।"
+        },
+        "टमाटर": {
+          cultivation: "कई क्षेत्रों में साल भर उगाया जा सकता है। अच्छी जल निकासी वाली मिट्टी, पूरी धूप और नियमित पानी की आवश्यकता होती है। सहारे के लिए खंभे या पिंजरे का उपयोग करें।",
+          diseases: "1. **अर्ली ब्लाइट:** निचली पत्तियों पर भूरे धब्बे पैदा करता है। 2. **ब्लॉसम एंड रोट:** फल के निचले हिस्से पर काले, धंसे हुए धब्बे।",
+          timing: "कई मौसमों में उगाया जा सकता है (खरीफ, रबी, जायद)।"
+        },
+        "आलू": {
+          cultivation: "अक्टूबर-नवंबर में बुवाई। ठंडी जलवायु और दोमट मिट्टी पसंद करता है। कंदों को धूप से बचाने के लिए मिट्टी चढ़ाने की आवश्यकता होती है।",
+          diseases: "1. **लेट ब्लाइट:** एक फंगस जैसा रोग जो तेजी से मुरझाने और सड़ने का कारण बनता है। 2. **पपड़ी:** आलू की सतह पर खुरदुरे, पपड़ीदार घाव पैदा करता है।",
+          timing: "रबी फसल, सर्दियों में बोई जाती है।"
+        },
+        "प्याज": {
+          cultivation: "अक्टूबर-नवंबर में बुवाई। अच्छी जल निकासी वाली रेतीली दोमट मिट्टी पसंद करता है। बल्ब बनने के लिए लंबे दिन की अवधि की आवश्यकता होती है। जब पत्तियां पीली होने लगें तो कटाई करें।",
+          diseases: "1. **डाउनी मिल्ड्यू:** फंगल रोग जो पीले धब्बे और फफूंदी जैसी वृद्धि का कारण बनता है। 2. **प्याज थ्रिप्स:** छोटे कीड़े जो पत्तियों पर फ़ीड करते हैं, जिससे चांदी की धारियाँ बनती हैं।",
+          timing: "रबी फसल, सर्दियों में बोई जाती है।"
+        },
+        "कपास": {
+          cultivation: "मई-जुलाई में बुवाई। गर्म जलवायु और काली मिट्टी की आवश्यकता होती है। इसे कम से कम 210 पाला-मुक्त दिनों की आवश्यकता होती है।",
+          diseases: "1. **बालवर्म:** एक इल्ली जो कपास के गांठों में घुसकर खाती है। 2. **बैक्टीरियल ब्लाइट:** पत्तियों पर कोणीय धब्बे और गांठों का सड़ना।",
+          timing: "खरीफ फसल, मानसून के मौसम में बोई जाती है।"
+        },
+        "गन्ना": {
+          cultivation: "फरवरी-अप्रैल में रोपण। गर्म और आर्द्र जलवायु और उपजाऊ मिट्टी की आवश्यकता होती है। यह एक लंबी अवधि की फसल है, जिसे परिपक्व होने में लगभग एक वर्ष लगता है।",
+          diseases: "1. **रेड रॉट:** एक फंगल रोग जो आंतरिक तने के ऊतक के लाल होने का कारण बनता है। 2. **स्मट:** डंठल के शीर्ष से एक काला, चाबुक जैसा ढांचा निकलता है।",
+          timing: "बसंत में बोया जाता है।"
+        },
+        "चाय": {
+          cultivation: "पहाड़ी क्षेत्रों में ढलानों पर उगाई जाती है। इसे गर्म, आर्द्र जलवायु, गहरी और उपजाऊ अच्छी जल निकासी वाली मिट्टी और लगातार बौछारों की आवश्यकता होती है।",
+          diseases: "1. **छाला ब्लाइट:** युवा पत्तियों पर छाले पैदा करने वाला फंगल रोग। 2. **रेड रस्ट:** पत्तियों और तनों पर लाल धब्बे पैदा करने वाला शैवाल रोग।",
+          timing: "साल भर उगाया जाता है, कटाई (पत्तियों को तोड़ना) एक सतत प्रक्रिया है।"
+        },
+        "कॉफी": {
+          cultivation: "अच्छी जल निकासी वाली दोमट मिट्टी के साथ गर्म और आर्द्र जलवायु की आवश्यकता होती है। दक्षिण भारत में पहाड़ियों पर उगाई जाती है।",
+          diseases: "1. **कॉफी रतुआ:** पत्तियों पर पीले धब्बे पैदा करने वाला एक फंगल रोग। 2. **बेरी बोरर:** एक बीटल जो कॉफी जामुन में घुसती है।",
+          timing: "साल भर उगाया जाता है, सर्दियों में कटाई होती है।"
+        }
+      },
+      ML: {
+        "നെല്ല് (അരി)": {
+          cultivation: "ജൂൺ-ജൂലൈ മാസങ്ങളിൽ വിതയ്ക്കുന്നു, ഒക്ടോബർ-നവംബറിൽ വിളവെടുക്കുന്നു. ചൂടുള്ളതും ഈർപ്പമുള്ളതുമായ കാലാവസ്ഥ, കനത്ത മഴ, നല്ല നീർവാർച്ചയുള്ള ഫലഭൂയിഷ്ഠമായ കളിമണ്ണ് എന്നിവ ആവശ്യമാണ്. കൃഷിയിടം ഒരുക്കുന്നതിൽ ഉഴവുചാൽ, നിരപ്പാക്കൽ എന്നിവ ഉൾപ്പെടുന്നു.",
+          diseases: "1. **റൈസ് ബ്ലൈസ്റ്റ്:** ഇലകളിൽ വജ്രാകൃതിയിലുള്ള പാടുകൾ ഉണ്ടാക്കുന്ന ഒരു ഫംഗസ് രോഗം. 2. **ബാക്ടീരിയൽ ബ്ലൈറ്റ്:** ഇലകൾ മഞ്ഞളിക്കാനും വാടിപ്പോകാനും കാരണമാകുന്നു.",
+          timing: "മൺസൂൺ കാലത്ത് കൃഷി ചെയ്യുന്ന ഖാരിഫ് വിള."
+        },
+        "ഗോതമ്പ്": {
+          cultivation: "ഒക്ടോബർ-നവംബർ മാസങ്ങളിൽ വിതയ്ക്കുന്നു, മാർച്ച്-ഏപ്രിൽ മാസങ്ങളിൽ വിളവെടുക്കുന്നു. തണുത്ത കാലാവസ്ഥയും മിതമായ മഴയും ആവശ്യമാണ്. എക്കൽ മണ്ണിൽ നന്നായി വളരുന്നു.",
+          diseases: "1. **റസ്റ്റ്:** ഇലകളിലും തണ്ടുകളിലും ചുവപ്പ്-തവിട്ടുനിറത്തിലുള്ള പാടുകൾ ഉണ്ടാക്കുന്ന ഫംഗസ് രോഗം. 2. **പൗഡറി മിൽഡ്യൂ:** ഇലകളിൽ വെളുത്ത, പൊടിപോലെയുള്ള പാടുകൾ.",
+          timing: "ശൈത്യകാലത്ത് നടുന്ന റാബി വിള."
+        },
+        "ചോളം": {
+          cultivation: "ജൂൺ-ജൂലൈ മാസങ്ങളിൽ വിതയ്ക്കുന്നു. മിതമായ താപനിലയും മഴയും ആവശ്യമാണ്. എക്കൽ മണ്ണിൽ നന്നായി വളരുന്നു. നല്ല വെയിൽ ആവശ്യമാണ്.",
+          diseases: "1. **കോൺ സ്മട്ട്:** ചെടികളിൽ വലിയ മുഴകൾ ഉണ്ടാക്കുന്ന ഫംഗസ് രോഗം. 2. **നോർത്തേൺ കോൺ ലീഫ് ബ്ലൈറ്റ്:** ഇലകളിൽ നീളമുള്ള, അണ്ഡാകൃതിയിലുള്ള മുറിവുകൾ.",
+          timing: "മൺസൂൺ കാലത്ത് നടുന്ന ഖാരിഫ് വിള."
+        },
+        "തക്കാളി": {
+          cultivation: "പല പ്രദേശങ്ങളിലും വർഷം മുഴുവൻ കൃഷി ചെയ്യാം. നല്ല നീർവാർച്ചയുള്ള മണ്ണ്, പൂർണ്ണ സൂര്യപ്രകാശം, പതിവ് നനയ്ക്കൽ എന്നിവ ആവശ്യമാണ്. താങ്ങായി കമ്പുകളോ കൂടുകളോ ഉപയോഗിക്കുക.",
+          diseases: "1. **ഏർലി ബ്ലൈറ്റ്:** താഴത്തെ ഇലകളിൽ തവിട്ടുനിറത്തിലുള്ള പാടുകൾ ഉണ്ടാക്കുന്നു. 2. **ബ്ലോസം എൻഡ് റോട്ട്:** പഴത്തിന്റെ അടിഭാഗത്ത് കറുത്ത, കുഴിഞ്ഞ പാടുകൾ.",
+          timing: "പല സീസണുകളിലും കൃഷി ചെയ്യാം (ഖാരിഫ്, റാബി, സൈദ്)."
+        },
+        "ഉരുളക്കിഴങ്ങ്": {
+          cultivation: "ഒക്ടോബർ-നവംബർ മാസങ്ങളിൽ വിതയ്ക്കുന്നു. തണുത്ത കാലാവസ്ഥയും എക്കൽ മണ്ണും ഇഷ്ടപ്പെടുന്നു. കിഴങ്ങുകളെ സൂര്യപ്രകാശത്തിൽ നിന്ന് സംരക്ഷിക്കാൻ മണ്ണിട്ട് മൂടേണ്ടതുണ്ട്.",
+          diseases: "1. **ലേറ്റ് ബ്ലൈറ്റ്:** അതിവേഗം വാടിപ്പോകാനും അഴുകാനും കാരണമാകുന്ന ഒരു ഫംഗസ് പോലെയുള്ള രോഗം. 2. **സ്കാബ്:** ഉരുളക്കിഴങ്ങിന്റെ ഉപരിതലത്തിൽ പരുക്കൻ, പാടുകൾ ഉണ്ടാക്കുന്നു.",
+          timing: "ശൈത്യകാലത്ത് നടുന്ന റാബി വിള."
+        },
+        "സവാള": {
+          cultivation: "ഒക്ടോബർ-നവംബർ മാസങ്ങളിൽ വിതയ്ക്കുന്നു. നല്ല നീർവാർച്ചയുള്ള മണൽ കലർന്ന എക്കൽ മണ്ണ് ഇഷ്ടപ്പെടുന്നു. കിഴങ്ങ് രൂപപ്പെടാൻ കൂടുതൽ പകൽ സമയം ആവശ്യമാണ്. ഇലകൾ മഞ്ഞളിക്കാൻ തുടങ്ങുമ്പോൾ വിളവെടുക്കുക.",
+          diseases: "1. **ഡൗണി മിൽഡ്യൂ:** മഞ്ഞ പാടുകളും ഫംഗസ് വളർച്ചയും ഉണ്ടാക്കുന്ന ഒരു ഫംഗസ് രോഗം. 2. **ഒനിയൻ ത്രിപ്സ്:** ഇലകളിൽ ആഹാരം കഴിക്കുന്ന ചെറിയ പ്രാണികൾ, ഇത് വെള്ളി വരകൾക്ക് കാരണമാകുന്നു.",
+          timing: "ശൈത്യകാലത്ത് നടുന്ന റാബി വിള."
+        },
+        "പരുത്തി": {
+          cultivation: "മെയ്-ജൂലൈ മാസങ്ങളിൽ വിതയ്ക്കുന്നു. ചൂടുള്ള കാലാവസ്ഥയും കറുത്ത മണ്ണും ആവശ്യമാണ്. കുറഞ്ഞത് 210 മഞ്ഞ് രഹിത ദിവസങ്ങൾ ആവശ്യമാണ്.",
+          diseases: "1. **ബോൾവേം:** പരുത്തിയുടെ കായ്കളിൽ തുളച്ച് ആഹാരം കഴിക്കുന്ന പുഴു. 2. **ബാക്ടീരിയൽ ബ്ലൈറ്റ്:** കോണീയ ഇലപ്പാടുകളും കായ് അഴുകലും ഉണ്ടാക്കുന്നു.",
+          timing: "മൺസൂൺ കാലത്ത് നടുന്ന ഖാരിഫ് വിള."
+        },
+        "കരിമ്പ്": {
+          cultivation: "ഫെബ്രുവരി-ഏപ്രിൽ മാസങ്ങളിൽ നടുന്നു. ചൂടുള്ളതും ഈർപ്പമുള്ളതുമായ കാലാവസ്ഥയും ഫലഭൂയിഷ്ഠമായ മണ്ണും ആവശ്യമാണ്. ഇത് വിളവെടുപ്പിന് ഏകദേശം ഒരു വർഷമെടുക്കുന്ന ഒരു ദീർഘകാല വിളയാണ്.",
+          diseases: "1. **റെഡ് റോട്ട്:** തണ്ടിന്റെ അകത്തെ ഭാഗം ചുവപ്പിക്കാൻ കാരണമാകുന്ന ഒരു ഫംഗസ് രോഗം. 2. **സ്മട്ട്:** തണ്ടിന്റെ മുകളിൽ നിന്ന് കറുത്ത, ചാട്ടപോലെയുള്ള ഘടന പുറത്തുവരാൻ കാരണമാകുന്നു.",
+          timing: "വസന്തകാലത്ത് നടുന്നു."
+        },
+        "ചായ": {
+          cultivation: "കുന്നിൻ ചെരിവുകളിൽ വളർത്തുന്നു. ചൂടുള്ള, ഈർപ്പമുള്ള കാലാവസ്ഥ, ആഴത്തിലുള്ളതും ഫലഭൂയിഷ്ഠമായതുമായ നല്ല നീർവാർച്ചയുള്ള മണ്ണ്, പതിവ് മഴ എന്നിവ ആവശ്യമാണ്.",
+          diseases: "1. **ബ്ലിസ്റ്റർ ബ്ലൈറ്റ്:** ഇളം ഇലകളിൽ കുമിളകൾ ഉണ്ടാക്കുന്ന ഒരു ഫംഗസ് രോഗം. 2. **റെഡ് റസ്റ്റ്:** ഇലകളിലും തണ്ടുകളിലും ചുവപ്പ് നിറത്തിലുള്ള പാടുകൾ ഉണ്ടാക്കുന്ന ആൽഗൽ രോഗം.",
+          timing: "വർഷം മുഴുവൻ കൃഷി ചെയ്യുന്നു, വിളവെടുപ്പ് (ഇല നുള്ളുന്നത്) ഒരു തുടർച്ചയായ പ്രക്രിയയാണ്।"
+        },
+        "കാപ്പി": {
+          cultivation: "നല്ല നീർവാർച്ചയുള്ള എക്കൽ മണ്ണോടൊപ്പം ചൂടുള്ളതും ഈർപ്പമുള്ളതുമായ കാലാവസ്ഥ ആവശ്യമാണ്. ദക്ഷിണേന്ത്യയിലെ കുന്നിൻ പ്രദേശങ്ങളിൽ വളർത്തുന്നു.",
+          diseases: "1. **കോഫി റസ്റ്റ്:** ഇലകളിൽ മഞ്ഞ പാടുകൾ ഉണ്ടാക്കുന്ന ഒരു ഫംഗസ് രോഗം. 2. **ബെറി ബോറർ:** കാപ്പി കായ്കളിൽ തുളച്ച് ആഹാരം കഴിക്കുന്ന ഒരു വണ്ട്.",
+          timing: "വർഷം മുഴുവൻ വളർത്തുന്നു, ശൈത്യകാലത്ത് വിളവെടുക്കുന്നു."
+      }
+      }
+    };
+    
+    // Disease Data for Disease Section
+    const diseasesData = {
+      EN: {
+        "Rice Blast": {
+          cause: "A fungal disease caused by *Magnaporthe oryzae*.",
+          symptoms: "Diamond-shaped spots on leaves, rotting of the neck of the panicle, and lesions on stems.",
+          solution: "Apply fungicides like Tricyclazole or Carbendazim. Use resistant varieties and avoid excessive nitrogen fertilizer.",
+          prevention: "Proper water management, balanced use of nitrogen, and planting resistant cultivars."
+        },
+        "Wheat Rust": {
+          cause: "Caused by the fungus *Puccinia* species (stripe, stem, and leaf rust).",
+          symptoms: "Orange, yellow, or reddish-brown pustules on leaves and stems.",
+          solution: "Spray fungicides like Propiconazole or Azoxystrobin. Remove and destroy infected plants.",
+          prevention: "Plant resistant varieties, timely sowing, and crop rotation."
+        },
+        "Potato Late Blight": {
+          cause: "Caused by the oomycete *Phytophthora infestans*.",
+          symptoms: "Rapid wilting, blackish-brown spots on leaves, and a bad odor.",
+          solution: "Apply fungicides like Mancozeb or Chlorothalonil. Remove infected leaves and destroy plant debris.",
+          prevention: "Use certified seed potatoes, ensure good air circulation, and apply preventive fungicides."
+        },
+        "Cotton Bollworm": {
+          cause: "A pest, the larval stage of a moth (*Helicoverpa armigera*).",
+          symptoms: "Boring holes in the cotton bolls, with larvae feeding inside.",
+          solution: "Use insecticides like Spinosad or Neem oil. Hand-pick and destroy larvae in early stages.",
+          prevention: "Planting Bollworm-resistant BT cotton, use of pheromone traps, and biological control with predatory insects."
+        },
+        "Tea Blister Blight": {
+          cause: "A fungal disease caused by *Exobasidium vexans*.",
+          symptoms: "Small, watery spots on young leaves that turn into blisters and cause defoliation.",
+          solution: "Apply Copper Oxychloride or Hexaconazole fungicides. Prune and destroy infected parts of the plant.",
+          prevention: "Maintain proper drainage, avoid waterlogging, and use resistant clones."
+        },
+        "Coffee Rust": {
+          cause: "A fungal disease caused by *Hemileia vastatrix*.",
+          symptoms: "Yellow or orange spots on the underside of leaves that turn powdery.",
+          solution: "Apply fungicides like Copper Hydroxide. Remove and burn infected leaves.",
+          prevention: "Plant rust-resistant varieties and ensure good shade management."
+        },
+        "Onion Downy Mildew": {
+          cause: "A fungal-like disease caused by *Peronospora destructor*.",
+          symptoms: "Yellowing and wilting of leaf tips, followed by a gray or purple fuzzy growth.",
+          solution: "Spray with fungicides such as Metalaxyl or Mancozeb. Avoid overhead irrigation.",
+          prevention: "Use a long crop rotation period, plant certified disease-free bulbs, and ensure proper spacing for air flow."
+        }
+      },
+      HI: {
+        "चावल का ब्लास्ट": {
+          cause: "एक फंगल रोग जो *मैग्नपोर्थे ओराइजे* के कारण होता है।",
+          symptoms: "पत्तियों पर हीरे के आकार के धब्बे, पैनिकल की गर्दन का सड़ना, और तनों पर घाव।",
+          solution: "ट्राइसाइक्लाजोल या कार्बेन्डाजिम जैसे फफूंदनाशकों का उपयोग करें। प्रतिरोधी किस्मों का उपयोग करें और अत्यधिक नाइट्रोजन उर्वरक से बचें।",
+          prevention: "उचित जल प्रबंधन, नाइट्रोजन का संतुलित उपयोग, और प्रतिरोधी किस्मों को लगाना।"
+        },
+        "गेहूं का रतुआ": {
+          cause: "फंगस *पुकिनिया* प्रजातियों (स्ट्राइप, स्टेम और लीफ रतुआ) के कारण होता है।",
+          symptoms: "पत्तियों और तनों पर नारंगी, पीले, या लाल-भूरे रंग के फुंसी।",
+          solution: "प्रोपिकोनाजोल या एजॉक्सिस्ट्रोबिन जैसे फफूंदनाशकों का छिड़काव करें। संक्रमित पौधों को हटाकर नष्ट कर दें।",
+          prevention: "प्रतिरोधी किस्मों को लगाएं, समय पर बुवाई करें, और फसल चक्र का पालन करें।"
+        },
+        "आलू का लेट ब्लाइट": {
+          cause: "ऊमाइसेटी *फाइटोफ्थोरा इन्फेस्टन्स* के कारण होता है।",
+          symptoms: "तेजी से मुरझाना, पत्तियों पर काले-भूरे धब्बे, और एक बुरी गंध।",
+          solution: "मैंकोजेब या क्लोरोथैलोनिल जैसे फफूंदनाशकों का उपयोग करें। संक्रमित पत्तियों को हटाकर पौधे के मलबे को नष्ट कर दें।",
+          prevention: "प्रमाणित बीज आलू का उपयोग करें, अच्छी वायु परिसंचरण सुनिश्चित करें, और निवारक फफूंदनाशकों का उपयोग करें।"
+        },
+        "कपास का बालवर्म": {
+          cause: "एक कीट, एक पतंगे (*हेलिकोवरपा आर्मीगेरा*) का लार्वा चरण।",
+          symptoms: "कपास के गांठों में छेद करना, लार्वा अंदर खाते हैं।",
+          solution: "स्पिनोसैड या नीम के तेल जैसे कीटनाशकों का उपयोग करें। शुरुआती चरणों में लार्वा को हाथ से हटाकर नष्ट कर दें।",
+          prevention: "बालवर्म-प्रतिरोधी बीटी कपास लगाना, फेरोमोन ट्रैप का उपयोग, और शिकारी कीटों के साथ जैविक नियंत्रण।"
+        },
+        "चाय का छाला ब्लाइट": {
+          cause: "एक फंगल रोग जो *एग्ज़ोबैसिडियम वेक्सन्स* के कारण होता है।",
+          symptoms: "युवा पत्तियों पर छोटे, पानी वाले धब्बे जो छाले बन जाते हैं और पत्तियों का गिरना का कारण बनते हैं।",
+          solution: "कॉपर ऑक्सीक्लोराइड या हेक्साकोनाजोल जैसे फफूंदनाशकों का उपयोग करें। संक्रमित पौधों के हिस्सों की छंटाई करके उन्हें नष्ट कर दें।",
+          prevention: "उचित जल निकासी बनाए रखें, जलजमाव से बचें, और प्रतिरोधी क्लोन का उपयोग करें।"
+        },
+        "कॉफी का रतुआ": {
+          cause: "एक फंगल रोग जो *हेमिलिया वास्टैट्रिक्स* के कारण होता है।",
+          symptoms: "पत्तियों के निचले हिस्से पर पीले या नारंगी धब्बे जो बाद में पाउडर बन जाते हैं।",
+          solution: "कॉपर हाइड्रॉक्साइड जैसे फफूंदनाशकों का उपयोग करें। संक्रमित पत्तियों को हटाकर जला दें।",
+          prevention: "रतुआ-प्रतिरोधी किस्मों को लगाएं और अच्छी छाया प्रबंधन सुनिश्चित करें।"
+        },
+        "प्याज का डाउनी मिल्ड्यू": {
+          cause: "एक फंगल जैसा रोग जो *पेरोनोस्पोरा डेस्ट्रक्टर* के कारण होता है।",
+          symptoms: "पत्तियों के सिरे का पीला पड़ना और मुरझाना, उसके बाद भूरे या बैंगनी रंग की फफूंदी जैसी वृद्धि।",
+          solution: "मेटालाक्सिल या मैंकोजेब जैसे फफूंदनाशकों का छिड़काव करें। ऊपर से सिंचाई से बचें।",
+          prevention: "एक लंबी फसल चक्र अवधि का उपयोग करें, प्रमाणित रोग-मुक्त बल्ब लगाएं, और हवा के प्रवाह के लिए उचित दूरी सुनिश्चित करें।"
+        }
+      },
+      ML: {
+        "നെല്ലിന്റെ ബ്ലൈസ്റ്റ്": {
+          cause: "*മാഗ്നപോർത്തെ ഒറൈസെ* എന്ന ഫംഗസ് രോഗം മൂലമാണ് ഇത് ഉണ്ടാകുന്നത്.",
+          symptoms: "ഇലകളിൽ വജ്രാകൃതിയിലുള്ള പാടുകൾ, കതിരിന്റെ കഴുത്ത് അഴുകൽ, തണ്ടുകളിൽ മുറിവുകൾ.",
+          solution: "ട്രൈസൈക്ലാസോൾ അല്ലെങ്കിൽ കാർബെൻഡാസിം പോലുള്ള കുമിൾനാശിനികൾ ഉപയോഗിക്കുക. പ്രതിരോധശേഷിയുള്ള ഇനങ്ങൾ ഉപയോഗിക്കുക, അമിതമായ നൈട്രജൻ വളം ഒഴിവാക്കുക.",
+          prevention: "ശരിയായ ജല പരിപാലനം, നൈട്രജന്റെ സന്തുലിതമായ ഉപയോഗം, പ്രതിരോധശേഷിയുള്ള ഇനങ്ങൾ നടുക."
+        },
+        "ഗോതമ്പ് റസ്റ്റ്": {
+          cause: "*പുകിനിയ* എന്ന ഫംഗസ് ഇനം (സ്ട്രൈപ്പ്, സ്റ്റെം, ലീഫ് റസ്റ്റ്) മൂലമാണ് ഉണ്ടാകുന്നത്.",
+          symptoms: "ഇലകളിലും തണ്ടുകളിലും ഓറഞ്ച്, മഞ്ഞ, അല്ലെങ്കിൽ ചുവപ്പ്-തവിട്ടുനിറത്തിലുള്ള കുമിളകൾ.",
+          solution: "പ്രൊപിക്കോണസോൾ അല്ലെങ്കിൽ അസോക്സിസ്ട്രോബിൻ പോലുള്ള കുമിൾനാശിനികൾ തളിക്കുക. രോഗം ബാധിച്ച ചെടികൾ നീക്കം ചെയ്ത് നശിപ്പിക്കുക.",
+          prevention: "പ്രതിരോധശേഷിയുള്ള ഇനങ്ങൾ നടുക, കൃത്യസമയത്ത് വിതയ്ക്കുക, വിളകൾ മാറ്റിമാറ്റി കൃഷി ചെയ്യുക."
+        },
+        "ഉരുളക്കിഴങ്ങ് ലേറ്റ് ബ്ലൈറ്റ്": {
+          cause: "*ഫൈറ്റോഫ്തോറ ഇൻഫെസ്റ്റൻസ്* എന്ന ഊമൈസെറ്റ് മൂലമാണ് ഇത് ഉണ്ടാകുന്നത്.",
+          symptoms: "വേഗത്തിലുള്ള വാട്ടം, ഇലകളിൽ കറുപ്പ്-തവിട്ടുനിറത്തിലുള്ള പാടുകൾ, ദുർഗന്ധം.",
+          solution: "മാങ്കോസെബ് അല്ലെങ്കിൽ ക്ലോറോതലോണിൽ പോലുള്ള കുമിൾനാശിനികൾ ഉപയോഗിക്കുക. രോഗം ബാധിച്ച ഇലകൾ നീക്കം ചെയ്ത് ചെടിയുടെ അവശിഷ്ടങ്ങൾ നശിപ്പിക്കുക.",
+          prevention: "സർട്ടിഫൈഡ് വിത്ത് ഉരുളക്കിഴങ്ങുകൾ ഉപയോഗിക്കുക, നല്ല വായുസഞ്ചാരം ഉറപ്പാക്കുക, പ്രതിരോധ കുമിൾനാശിനികൾ ഉപയോഗിക്കുക."
+        },
+        "പരുത്തി ബോൾവേം": {
+          cause: "ഒരു കീടമാണ്, ഇത് ഒരു നിശാശലഭത്തിന്റെ (*ഹെലികോവർപ്പ ആർമിഗെറ*) ലാർവ ഘട്ടമാണ്.",
+          symptoms: "പരുത്തിയുടെ കായ്കളിൽ തുളകൾ ഉണ്ടാക്കുക, ലാർവകൾ അകത്ത് ആഹാരം കഴിക്കുന്നു.",
+          solution: "സ്പിനോസാഡ് അല്ലെങ്കിൽ വേപ്പെണ്ണ പോലുള്ള കീടനാശിനികൾ ഉപയോഗിക്കുക. ആദ്യ ഘട്ടങ്ങളിൽ ലാർവകളെ കൈകൊണ്ട് നീക്കം ചെയ്ത് നശിപ്പിക്കുക.",
+          prevention: "ബോൾവേം-പ്രതിരോധശേഷിയുള്ള ബിടി പരുത്തി നടുക, ഫെറോമോൺ കെണികൾ ഉപയോഗിക്കുക, വേട്ടക്കാരായ പ്രാണികളെ ഉപയോഗിച്ച് ജൈവ നിയന്ത്രണം നടത്തുക."
+        },
+        "ചായ ബ്ലിസ്റ്റർ ബ്ലൈറ്റ്": {
+          cause: "ഒരു ഫംഗസ് രോഗം മൂലമാണ് ഇത് ഉണ്ടാകുന്നത്.",
+          symptoms: "ഇളം ഇലകളിൽ ചെറിയ, നീരുള്ള പാടുകൾ, അത് കുമിളകളായി മാറുകയും ഇല കൊഴിയാൻ കാരണമാവുകയും ചെയ്യുന്നു.",
+          solution: "കോപ്പർ ഓക്സിക്ലോറൈഡ് അല്ലെങ്കിൽ ഹെക്സാകോണസോൾ പോലുള്ള കുമിൾനാശിനികൾ ഉപയോഗിക്കുക. രോഗം ബാധിച്ച ചെടിയുടെ ഭാഗങ്ങൾ മുറിച്ചുമാറ്റി നശിപ്പിക്കുക.",
+          prevention: "ശരിയായ നീർവാർച്ച നിലനിർത്തുക, വെള്ളം കെട്ടിക്കിടക്കുന്നത് ഒഴിവാക്കുക, പ്രതിരോധശേഷിയുള്ള ക്ലോണുകൾ ഉപയോഗിക്കുക."
+        },
+        "കാപ്പി റസ്റ്റ്": {
+          cause: "*ഹെമിലിയ വാസ്റ്റാട്രിക്സ്* എന്ന ഫംഗസ് രോഗം മൂലമാണ് ഇത് ഉണ്ടാകുന്നത്.",
+          symptoms: "ഇലകളുടെ അടിഭാഗത്ത് മഞ്ഞ അല്ലെങ്കിൽ ഓറഞ്ച് പാടുകൾ, അത് പിന്നീട് പൊടിയായി മാറുന്നു.",
+          solution: "കോപ്പർ ഹൈഡ്രോക്സൈഡ് പോലുള്ള കുമിൾനാശിനികൾ ഉപയോഗിക്കുക. രോഗം ബാധിച്ച ഇലകൾ നീക്കം ചെയ്ത് കത്തിക്കുക.",
+          prevention: "റസ്റ്റ്-പ്രതിരോധശേഷിയുള്ള ഇനങ്ങൾ നടുക, നല്ല തണൽ പരിപാലനം ഉറപ്പാക്കുക."
+        },
+        "സവാള ഡൗണി മിൽഡ്യൂ": {
+          cause: "*പെറോനോസ്പോറ ഡെസ്ട്രക്ടർ* എന്ന ഫംഗസ് പോലെയുള്ള രോഗം മൂലമാണ് ഇത് ഉണ്ടാകുന്നത്.",
+          symptoms: "ഇലകളുടെ അറ്റം മഞ്ഞളിക്കുകയും വാടിപ്പോകുകയും ചെയ്യുന്നു, തുടർന്ന് ചാരനിറത്തിലോ വയലറ്റ് നിറത്തിലോ ഉള്ള വളർച്ച.",
+          solution: "മെറ്റാലാക്സിൽ അല്ലെങ്കിൽ മാങ്കോസെബ് പോലുള്ള കുമിൾനാശിനികൾ ഉപയോഗിച്ച് തളിക്കുക. മുകളിൽ നിന്ന് നനയ്ക്കുന്നത് ഒഴിവാക്കുക.",
+          prevention: "ദീർഘകാല വിളകൾ മാറ്റിമാറ്റി കൃഷി ചെയ്യുക, സർട്ടിഫൈഡ് രോഗരഹിതമായ കിഴങ്ങുകൾ നടുക, വായുസഞ്ചാരത്തിനായി ശരിയായ അകലം ഉറപ്പാക്കുക."
+      }
+      }
+    };
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.getElementById("langSelector").innerText = `🌐 ${lang}`;
+      document.getElementById("welcomeTitle").innerText = translations[lang].welcomeTitle;
+      document.getElementById("welcomeText").innerText = translations[lang].welcomeText;
+      document.getElementById("tipTitle").innerText = translations[lang].tipTitle;
+      document.getElementById("weatherNavTitle").innerText = translations[lang].weatherNavTitle;
+      document.getElementById("marketTitle").innerText = translations[lang].marketTitle;
+      document.getElementById("recentTitle").innerText = translations[lang].recentTitle;
+      document.getElementById("topic1").innerText = translations[lang].topic1;
+      document.getElementById("topic1Time").innerText = translations[lang].topic1Time;
+      document.getElementById("topic2").innerText = translations[lang].topic2;
+      document.getElementById("topic2Time").innerText = translations[lang].topic2Time;
+      document.getElementById("chatHeader").innerText = translations[lang].chatHeader;
+      document.getElementById("chatButton").innerText = translations[lang].chatButton;
+      document.getElementById("chatInput").placeholder = translations[lang].chatPlaceholder;
+      document.getElementById("cropInfoTitle").innerText = translations[lang].cropInfoTitle;
+      document.getElementById("cropInfoText").innerText = translations[lang].cropInfoText;
+      document.getElementById("cropDiseaseTitle").innerText = translations[lang].cropDiseaseTitle;
+      document.getElementById("cropDiseaseText").innerHTML = translations[lang].cropDiseaseText;
+      document.getElementById("quickTitle").innerText = translations[lang].quickTitle;
+      document.getElementById("askTitle").innerText = translations[lang].askTitle;
+      document.getElementById("diseaseTitle").innerText = translations[lang].diseaseTitle;
+      document.getElementById("weatherTitle").innerText = translations[lang].weatherTitle;
+      document.getElementById("knowledgeTitle").innerText = translations[lang].knowledgeTitle;
+      document.getElementById("knowledgeDetailsTitle").innerText = translations[lang].knowledgeDetailsTitle;
+      document.getElementById("diseaseSectionTitle").innerText = translations[lang].diseaseSectionTitle;
+      document.getElementById("diseaseDetailsTitle").innerText = translations[lang].diseaseDetailsTitle;
+      document.getElementById("knowledgeDetailsContent").innerHTML = "";
+      document.getElementById("diseaseDetailsContent").innerHTML = "";
+      updateTipText();
+      document.getElementById("weatherText").innerText = '';
+      populateCropList();
+      populateDiseaseList();
+    }
+
+    document.getElementById("langSelector").onclick = function() {
+      if(currentLang === "EN") {
+        setLanguage("HI");
+      } else if(currentLang === "HI") {
+        setLanguage("ML");
+      } else {
+        setLanguage("EN");
+      }
+    };
+
+    // Daily Tip
+    const tips = [
+      {EN: "Water your crops early in the morning to reduce evaporation.", HI: "अपने फसल को सुबह जल्दी पानी दें ताकि वाष्पीकरण कम हो।", ML: "നിങ്ങളുടെ വിളകൾക്ക് രാവിലെ നേരത്തെ വെള്ളം നൽകുക, അത് ബാഷ്പീകരണം കുറയ്ക്കും."},
+      {EN: "Rotate crops each season to maintain soil fertility.", HI: "मिट्टी की उर्वरता बनाए रखने के लिए प्रत्येक मौसम में फसल का चक्र बदलें।", ML: "മണ്ണിൻ്റെ ഫലഭൂയിഷ്ഠത നിലനിർത്താൻ ഓരോ സീസണിലും വിളകൾ മാറ്റിമാറ്റി കൃഷി ചെയ്യുക."},
+      {EN: "Use organic compost to improve soil quality.", HI: "मिट्टी की गुणवत्ता सुधारने के लिए जैविक खाद का उपयोग करें।", ML: "മണ്ണിന്റെ ഗുണനിലവാരം മെച്ചപ്പെടുത്താൻ ജൈവവളം ഉപയോഗിക്കുക."},
+      {EN: "Neem oil is a natural pesticide for plants.", HI: "नीम का तेल पौधों के लिए प्राकृतिक कीट नाशक है।", ML: "വേപ്പെണ്ണ ചെടികൾക്കുള്ള ഒരു സ്വാഭാവിക കീടനാശിനിയാണ്."},
+      {EN: "Mulching helps retain soil moisture during summer.", HI: "मल्चिंग गर्मियों में मिट्टी की नमी बनाए रखने में मदद करता है।", ML: "വേനൽക്കാലത്ത് മണ്ണിലെ ഈർപ്പം നിലനിർത്താൻ പുതയിടുന്നത് സഹായിക്കുന്നു."},
+      {EN: "Always check the weather forecast before sowing.", HI: "बुवाई से पहले हमेशा मौसम पूर्वानुमान देखें।", ML: "വിത്ത് വിതയ്ക്കുന്നതിന് മുൻപ് എല്ലായ്പ്പോഴും കാലാവസ്ഥാ പ്രവചനം പരിശോധിക്കുക."}
+    ];
+    function updateTipText() {
+      const randomTip = tips[Math.floor(Math.random() * tips.length)];
+      document.getElementById("tipText").innerText = randomTip[currentLang];
+    }
+    window.onload = () => {
+        setLanguage("EN");
+    };
+
+    // Show weather section
+    function showWeather() {
+        const weatherCard = document.getElementById('weatherCard');
+        if (weatherCard.style.display === 'block') {
+            weatherCard.style.display = 'none';
+        } else {
+            weatherCard.style.display = 'block';
+            getWeather();
+        }
+    }
+
+    function getWeather() {
+        const weatherText = document.getElementById('weatherText');
+        weatherText.innerText = translations[currentLang].botResponseWeather;
+    }
+
+    // Chatbot
+    function toggleChat() {
+      const chat = document.getElementById("chatbot");
+      chat.style.display = chat.style.display === "flex" ? "none" : "flex";
+      if (chat.style.display === "flex") {
+        document.getElementById("chatInput").focus();
+      }
+    }
+
+    function sendMessage() {
+      const input = document.getElementById("chatInput");
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      const chatBox = document.getElementById("chatMessages");
+      const userMsg = document.createElement("div");
+      userMsg.className = "message user-msg";
+      userMsg.innerText = msg;
+      chatBox.appendChild(userMsg);
+
+      const botMsg = document.createElement("div");
+      botMsg.className = "message bot-msg";
+      botMsg.innerText = getBotResponse(msg.toLowerCase());
+      chatBox.appendChild(botMsg);
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+      input.value = "";
+    }
+
+    function getBotResponse(msg) {
+      if (msg.includes("weather") || msg.includes("मौसम") || msg.includes("കാലാവസ്ഥാ")) {
+        return translations[currentLang].botResponseWeather;
+      }
+      if (msg.includes("crop") || msg.includes("फसल") || msg.includes("വിളകൾ") || msg.includes("धान")) {
+        return translations[currentLang].botResponseCrop;
+      }
+      if (msg.includes("price") || msg.includes("मूल्य") || msg.includes("വിലകൾ")) {
+        return translations[currentLang].botResponsePrice;
+      }
+      return translations[currentLang].botResponseDefault;
+    }
+
+    function addBotMessage(text) {
+      const chatBox = document.getElementById("chatMessages");
+      const botMsg = document.createElement("div");
+      botMsg.className = "message bot-msg";
+      botMsg.innerText = text;
+      chatBox.appendChild(botMsg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function handleCamera() {
+      const botMessage = translations[currentLang].chatHeader + ": " + 
+                         (currentLang === "EN" ? "Please upload an image of the crop or disease to get a diagnosis." :
+                          currentLang === "HI" ? "कृपा करके फसल या रोग की तस्वीर अपलोड करें ताकि निदान मिल सके।" :
+                          "വിളയുടെയോ രോഗത്തിന്റെയോ ചിത്രം അപ്‌ലോഡ് ചെയ്യുക, കൃത്യമായ വിവരങ്ങൾ ലഭിക്കുന്നതാണ്.");
+      addBotMessage(botMessage);
+    }
+
+    function handleVoice() {
+      const botMessage = translations[currentLang].chatHeader + ": " + 
+                         (currentLang === "EN" ? "Please record your question. I am ready to listen." :
+                          currentLang === "HI" ? "कृपया अपना प्रश्न रिकॉर्ड करें। मैं सुनने के लिए तैयार हूँ।" :
+                          "നിങ്ങളുടെ ചോദ്യം റെക്കോർഡ് ചെയ്യുക. ഞാൻ കേൾക്കാൻ തയ്യാറാണ്.");
+      addBotMessage(botMessage);
+    }
+
+    // Knowledge Section Logic
+    function populateCropList() {
+      const cropListContainer = document.getElementById('cropList');
+      cropListContainer.innerHTML = '';
+      const crops = Object.keys(cropsData[currentLang]);
+      crops.forEach(crop => {
+        const button = document.createElement('button');
+        button.className = 'crop-button';
+        button.innerText = crop;
+        button.onclick = () => showCropDetails(crop);
+        cropListContainer.appendChild(button);
+      });
+    }
+
+    function showCropDetails(cropName) {
+      const detailsTitle = document.getElementById('knowledgeDetailsTitle');
+      const detailsContent = document.getElementById('knowledgeDetailsContent');
+      const cropInfo = cropsData[currentLang][cropName];
+
+      detailsTitle.innerText = cropName;
+      detailsContent.innerHTML = `
+        <h4>${currentLang === "EN" ? "How to Cultivate" : currentLang === "HI" ? "कैसे उगाएं" : "എങ്ങനെ കൃഷി ചെയ്യാം"}</h4>
+        <p>${cropInfo.cultivation}</p>
+        <h4>${currentLang === "EN" ? "Timing" : currentLang === "HI" ? "समय" : "സമയം"}</h4>
+        <p>${cropInfo.timing}</p>
+        <h4>${currentLang === "EN" ? "Common Diseases" : currentLang === "HI" ? "सामान्य रोग" : "സാധാരണ രോഗങ്ങൾ"}</h4>
+        <p>${cropInfo.diseases}</p>
+      `;
+    }
+
+    function toggleKnowledge() {
+      const knowledgeSection = document.getElementById('knowledgeSection');
+      knowledgeSection.style.display = knowledgeSection.style.display === 'flex' ? 'none' : 'flex';
+      if (knowledgeSection.style.display === 'flex') {
+        populateCropList();
+      }
+    }
+
+    // Disease Section Logic
+    function populateDiseaseList() {
+      const diseaseListContainer = document.getElementById('diseaseList');
+      diseaseListContainer.innerHTML = '';
+      const diseases = Object.keys(diseasesData[currentLang]);
+      diseases.forEach(disease => {
+        const button = document.createElement('button');
+        button.className = 'disease-button';
+        button.innerText = disease;
+        button.onclick = () => showDiseaseDetails(disease);
+        diseaseListContainer.appendChild(button);
+      });
+    }
+
+    function showDiseaseDetails(diseaseName) {
+      const detailsTitle = document.getElementById('diseaseDetailsTitle');
+      const detailsContent = document.getElementById('diseaseDetailsContent');
+      const diseaseInfo = diseasesData[currentLang][diseaseName];
+
+      detailsTitle.innerText = diseaseName;
+      detailsContent.innerHTML = `
+        <h4>${currentLang === "EN" ? "Cause" : currentLang === "HI" ? "कारण" : "കാരണം"}</h4>
+        <p>${diseaseInfo.cause}</p>
+        <h4>${currentLang === "EN" ? "Symptoms" : currentLang === "HI" ? "लक्षण" : "ലക്ഷണങ്ങൾ"}</h4>
+        <p>${diseaseInfo.symptoms}</p>
+        <h4>${currentLang === "EN" ? "Solution" : currentLang === "HI" ? "समाधान" : "പരിഹാരം"}</h4>
+        <p>${diseaseInfo.solution}</p>
+        <h4>${currentLang === "EN" ? "Prevention" : currentLang === "HI" ? "रोकथाम" : "പ്രതിരോധം"}</h4>
+        <p>${diseaseInfo.prevention}</p>
+        <br>
+        <h4>${translations[currentLang].fertilizerSectionTitle}</h4>
+        <p>${translations[currentLang].fertilizerTip}</p>
+      `;
+    }
+
+    function toggleDisease() {
+      const diseaseSection = document.getElementById('diseaseSection');
+      diseaseSection.style.display = diseaseSection.style.display === 'flex' ? 'none' : 'flex';
+      if (diseaseSection.style.display === 'flex') {
+        populateDiseaseList();
+      }
+    }
+
+    // Toggle main content visibility
+    function toggleMainContent(section) {
+        const sections = ['welcome', 'tipCard', 'weatherCard', 'quickTitle', 'quick-actions', 'cropInfo', 'recent'];
+        sections.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                if (section === 'home') {
+                    if (id === 'tipCard' || id === 'cropInfo' || id === 'quickTitle' || id === 'quick-actions' || id === 'recent') {
+                        element.style.display = 'block';
+                    } else {
+                        element.style.display = '';
+                    }
+                } else {
+                    element.style.display = 'none';
+                }
+            }
+        });
+        document.getElementById('weatherCard').style.display = 'none';
+        document.getElementById('chatbot').style.display = 'none';
+        document.getElementById('knowledgeSection').style.display = 'none';
+        document.getElementById('diseaseSection').style.display = 'none';
+    }
+
+    setLanguage("EN");
+  </script>
+</body>
+</html>
